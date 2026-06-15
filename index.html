@@ -1,0 +1,164 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>EINHORN.live — Bitcoin Finanzplanung</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <header>
+    <div class="logo">🦄 EINHORN.live</div>
+    <p>Bitcoin-Finanzplanung für große Käufe</p>
+  </header>
+
+  <main>
+    <section class="intro card">
+      <h1>Szenario: Großer Kauf mit Bitcoin</h1>
+      <p>Du willst ein Auto (oder etwas anderes Teures) kaufen und hast Bitcoin. Was ist besser?</p>
+      <ul>
+        <li>🪙 <strong>Jetzt BTC verkaufen</strong> und bar zahlen</li>
+        <li>⏳ <strong>Warten</strong> und später verkaufen (mit Preis-Szenarien)</li>
+        <li>🏦 <strong>BTC-besicherter Kredit</strong> aufnehmen (Bitcoin als Sicherheit, LTV ≤ 50%)</li>
+        <li>🚗 <strong>Händlerkredit</strong> (6–7%, Anzahlung variabel)</li>
+        <li>🔀 <strong>Mix</strong> aus Teilzahlung + Kredit</li>
+      </ul>
+    </section>
+
+    <section class="card">
+      <h2>Deine Eingaben</h2>
+      <form id="inputs">
+        <div class="grid">
+          <label>
+            <span>Kaufpreis (€)</span>
+            <input type="number" id="purchasePrice" value="50000" min="0" step="1000" />
+          </label>
+          <label>
+            <span>Aktueller BTC-Bestand</span>
+            <input type="number" id="btcAmount" value="1.0" min="0" step="0.01" />
+          </label>
+          <label>
+            <span>Aktueller BTC-Preis (€)</span>
+            <input type="number" id="btcPriceNow" value="90000" min="0" step="100" />
+          </label>
+          <label>
+            <span>Haltefrist erfüllt?</span>
+            <select id="holdingPeriodMet">
+              <option value="yes" selected>Ja (&gt; 1 Jahr, steuerfrei)</option>
+              <option value="no">Nein (Spekulationssteuer ~28%)</option>
+            </select>
+          </label>
+          <label>
+            <span>BTC-Preis in 1 Jahr — pessimistisch (€)</span>
+            <input type="number" id="btcPricePessimistic" value="60000" min="0" step="1000" />
+          </label>
+          <label>
+            <span>BTC-Preis in 1 Jahr — realistisch (€)</span>
+            <input type="number" id="btcPriceRealistic" value="100000" min="0" step="1000" />
+          </label>
+          <label>
+            <span>BTC-Preis in 1 Jahr — optimistisch (€)</span>
+            <input type="number" id="btcPriceOptimistic" value="150000" min="0" step="1000" />
+          </label>
+          <label>
+            <span>BTC-besicherter Kredit — Zins p.a. (%)</span>
+            <input type="number" id="btcLoanRate" value="10" min="0" step="0.1" />
+          </label>
+          <label>
+            <span>Händlerkredit — Zins p.a. (%)</span>
+            <input type="number" id="dealerLoanRate" value="6.5" min="0" step="0.1" />
+          </label>
+          <label>
+            <span>Händlerkredit — Laufzeit (Jahre)</span>
+            <input type="number" id="dealerLoanYears" value="5" min="1" max="10" step="1" />
+          </label>
+          <label>
+            <span>Händlerkredit — Anzahlung (% des Kaufpreises)</span>
+            <input type="number" id="dealerDownPaymentPercent" value="20" min="0" max="100" step="5" />
+          </label>
+          <label>
+            <span>Steuersatz bei Verkauf (%)</span>
+            <input type="number" id="taxRate" value="28" min="0" max="60" step="1" />
+          </label>
+        </div>
+        <h3 style="margin-top:1.5rem; color: var(--accent);">Deine Prioritäten festlegen</h3>
+        <p style="color: var(--muted); font-size: 0.9rem;">
+          Wie wichtig sind dir diese Ziele? (1 = egal, 5 = sehr wichtig)
+        </p>
+        <div class="grid">
+          <label>
+            <span>🪙 BTC-Erhalt (möglichst viel behalten)</span>
+            <input type="range" id="weightBtcRetention" min="1" max="5" value="5" />
+          </label>
+          <label>
+            <span>📉 Niedrige monatliche Belastung</span>
+            <input type="range" id="weightMonthlyBurden" min="1" max="5" value="3" />
+          </label>
+          <label>
+            <span>⏳ Wenig sofort verkaufen</span>
+            <input type="range" id="weightImmediateSale" min="1" max="5" value="4" />
+          </label>
+          
+          <label>
+            <span>💰 Niedrige Gesamtkosten</span>
+            <input type="range" id="weightTotalCost" min="1" max="5" value="3" />
+          </label>
+        </div>
+        <button type="submit" class="primary">Szenarien berechnen</button>
+      </form>
+    </section>
+
+    <section id="results" class="results">
+      <h2>Ergebnisse</h2>
+
+      <div class="summary card">
+        <h3>Zusammenfassung deiner Lage</h3>
+        <div id="summaryText"></div>
+      </div>
+
+      <div class="scenario-grid">
+        <div class="card scenario" id="scenario-sell-now">
+          <h3>🪙 1. Sofort verkaufen</h3>
+          <div class="scenario-content"></div>
+        </div>
+        <div class="card scenario" id="scenario-btc-loan">
+          <h3>🏦 2. BTC-besicherter Kredit</h3>
+          <div class="scenario-content"></div>
+        </div>
+        <div class="card scenario" id="scenario-dealer-loan">
+          <h3>🚗 3. Händlerkredit</h3>
+          <div class="scenario-content"></div>
+        </div>
+        <div class="card scenario" id="scenario-mix">
+          <h3>🔀 4. Mix: Verkauf + BTC-Kredit</h3>
+          <div class="scenario-content"></div>
+        </div>
+      </div>
+
+      <div class="card">
+        <h3>📈 BTC-Preis-Szenarien: Verkauf in 1 Jahr</h3>
+        <div id="futureScenarios"></div>
+      </div>
+
+      <div class="card">
+        <h3>🧾 Händlerkredit: Tilgungsverlauf</h3>
+        <div id="amortizationSchedule"></div>
+      </div>
+
+      <div class="card">
+        <h3>🏆 Entscheidungshilfe: Was ist die beste Option?</h3>
+        <p style="color: var(--muted); font-size: 0.9rem;">
+          Bewertung nach deinen Prioritäten: so viel BTC wie möglich behalten, niedrige monatliche Belastung, wenig sofort verkaufen, niedrige Gesamtkosten.
+        </p>
+        <div id="decisionMatrix"></div>
+      </div>
+    </section>
+  </main>
+
+  <footer>
+    <p>Made for 🦄 EINHORN.live — Bitcoin-only.</p>
+  </footer>
+
+  <script src="app.js"></script>
+</body>
+</html>
