@@ -55,3 +55,9 @@ Dann `http://localhost:8000` öffnen.
 ## Lizenz
 
 MIT
+
+## Lern-Apps
+
+| App | Ordner | Beschreibung |
+|-----|--------|--------------|
+| If-Sätze Typ 2 (Englisch, Kl. 8) | [`apps/if-saetze-typ2/`](apps/if-saetze-typ2/) | Regeln + 10 Übungsmodi, Blitz-Runde, Klassenarbeit-Simulation. Integration: [`INTEGRATION.md`](apps/if-saetze-typ2/INTEGRATION.md) |
